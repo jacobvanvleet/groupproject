@@ -1,15 +1,12 @@
 ---
-title: "Does age and transportation habits predict communication apprehension?"
-author: "Tyler Johnston, Vanessa Kountikis, Shivya Paul, Jacob Van Vleet"
+title: "Do age and transportation habits predict communication apprehension?"
+author: "Tyler Johnston, Vanessa Kountakis, Shivya Paul, Jacob Van Vleet"
 date: today
 execute:
   warning: false
   message: false
   echo: true
 format:
-  html:
-    toc: true
-    number-sections: true
   pdf:
     toc: true
     number-sections: true
@@ -21,12 +18,12 @@ library(tidyverse)
 library(broom)
 library(knitr)
 library(reticulate)
-reticulate::use_python(Sys.which("python3"), required = TRUE)
+reticulate::use_python(Sys.which("python"), required = TRUE)
 options(conflicts.policy = "NULL")
 ```
 
 ```{r echo=FALSE, include=FALSE}
-data <- read.csv("../minimal_clean.csv") |> 
+data <- read.csv("C:/Users/ttdog/Projects/groupproject_sibling_data/cleandata/minimal_clean.csv") |> 
   glimpse()
 ```
 
@@ -98,15 +95,19 @@ This manuscript is our submission for the summer semester project for Psych 755 
 
 ## Literature Review
 
-Communication apprehension—the fear or anxiety associated with real or anticipated communication with others—is a well-studied individual difference that has been linked to a range of social and behavioral outcomes. The Personal Report of Communication Apprehension (PRCA-24) is a widely used self-report measure of communication apprehension originally described by McCroskey in *An Introduction to Rhetorical Communication* [@mccroskey1982] and made available on the author's assessment page [@prca24]. Higher scores on the PRCA-24 indicate greater anxiety across interpersonal, group, meeting, and public speaking contexts.
+Communication apprehension, the fear or anxiety associated with real or anticipated communication with others, is a well-studied individual difference that has been linked to a range of social and behavioral outcomes. The Personal Report of Communication Apprehension (PRCA-24) is a widely used self-report measure of communication apprehension originally described by McCroskey in *An Introduction to Rhetorical Communication* [@mccroskey1982] and made available on the author's assessment page [@prca24]. Higher scores on the PRCA-24 indicate greater anxiety across interpersonal, group, meeting, and public speaking contexts.
 
-Daily transportation choices may also relate to social experience. Ride-share services and public transportation require different levels of interaction with strangers, drivers, and fellow passengers. If communication apprehension shapes or is shaped by these everyday social exposures, we would expect transportation habits and age to be associated with PRCA scores. The present study tests these expectations in a single sample.
+Daily transportation choices and age may also relate to social experience. Ride-share services and public transportation require different levels of interaction with strangers, drivers, and fellow passengers. If communication apprehension shapes or is shaped by these everyday social exposures, we would expect transportation habits and age to be associated with PRCA scores. The present study tests these expectations in a single sample.
 
 ## Research Questions and Hypotheses
 
-We address four research questions (RQs):
+We address four main research questions (RQs):
 
-- **RQ1:** Do individuals who use different modes of transportation differ in communication apprehension?  
+- **RQ1:** Do individuals who use ride share, public transportation, or both differ in communication apprehension from those who use neither mode of transportation?  
+  - $H_0$: There is no difference in mean communication apprehension between individuals who use at least one mode of transportation and those who use neither.  
+  - $H_a$: Mean communication apprehension differs between individuals who use at least one mode of transportation and those who use neither.
+
+- **RQ1.5:** Among individuals who use transportation, do communication apprehension levels differ by transportation mode?  
   - $H_0$: There is no difference in mean communication apprehension across the four transportation mode groups.  
   - $H_a$: At least one transportation mode group differs in mean communication apprehension.
 
@@ -115,10 +116,10 @@ We address four research questions (RQs):
   - $H_a$: Age is associated with communication apprehension.
 
 - **RQ3:** Does age moderate the relationship between transportation use and communication apprehension?  
-  - $H_0$: The association between overall transportation frequency and communication apprehension does not differ between younger (17-30) and older (31+) participants.  
+  - $H_0$: The association between overall transportation frequency and communication apprehension does not differ between younger (17–30) and older (31+) participants.  
   - $H_a$: The association between overall transportation frequency and communication apprehension differs by age group.
 
-- **RQ4:** Comparing different machine-learning models to predict communication apprehension from age and transportation habits better than a baseline mean model?  
+- **RQ4:** Can machine-learning models predict communication apprehension from age and transportation habits more accurately than a baseline mean model, and which model performs best?  
   - $H_0$: Machine-learning models do not improve prediction over the baseline mean model.  
   - $H_a$: At least one machine-learning model achieves a lower RMSE than the baseline mean model.
 
@@ -175,17 +176,17 @@ kable(descriptives, digits = 2)
 
 ## Overview of Analytic and Predictive Methods
 
-This project used regression, ANOVA, and correlation to test explanatory relationships and to answer the three inferential RQs. We also used machine learning to optimize prediction of communication apprehension and to answer RQ4.
+This analysis used t-tests, regression, ANOVA, and correlation to test explanatory relationships and to answer the main inferential RQs. We also used machine learning to optimize prediction of communication apprehension and to answer our algorithmic RQ.
 
-For the inferential questions, we used ordinary least-squares regression to estimate the association between communication apprehension and continuous predictors (age, ride-share frequency, public-transport frequency), one-way ANOVA to compare mean communication apprehension across categorical frequency groups, and a moderation model to test the interaction between age group and overall transportation frequency. All inferential models were fit in R and translated to python for visuals.
+For the inferential questions, we used independent-samples t-tests to compare mean differences between transportation groups, one-way ANOVA to compare mean communication apprehension across categorical frequency groups, and a moderation model to test the interaction between age group and overall transportation frequency. All inferential models were fit in R and later translated to python, using Seaborn for visuals.
 
-For the predictive question, we compared four models: a baseline that predicted the mean communication apprehension, *k*-nearest neighbors (k = 5), a random forest (100 trees, mtry and minimum node size tuned via 5-fold cross-validation), and a feed-forward neural network (hidden units, activation, and penalty tuned via 5-fold cross-validation). Predictive performance was evaluated with root mean squared error (RMSE) on held-out data. The neural network used a 60/20/20 train/validation/test split; KNN and random forest used an 80/20 split. Models were fit and tuned with R `tidymodels`.
+For the predictive question, we compared four models: a baseline that always predicted the mean communication apprehension, *k*-nearest neighbors (k = 5), a random forest (100 trees, mtry and minimum node size tuned via 5-fold cross-validation), and a feed-forward neural network (hidden units, activation, and penalty tuned via 5-fold cross-validation). Predictive performance was evaluated with root mean squared error (RMSE) on held-out data. The neural network used a 60/20/20 train/validation/test split, with the top model being trained on both the train and validation sets before predicting into test data; KNN and random forest used an 80/20 split. Models were fit and tuned with R `tidymodels`.
 
 # Results
 
 ## RQ1: Do Transportation Habits Predict Communication Apprehension?
 
-A one-way ANOVA found no significant differences in communication apprehension across public transportation frequency groups, F(4, 255) = 2.36, p = 0.054. In contrast, communication apprehension differed significantly across rideshare frequency groups, F(4, 255) = 9.39, p < .001. Tukey comparisons showed that participants who used rideshare 2–4 days per month, 4–8 days per month, or 8 or more days per month had significantly lower communication apprehension than participants who never used rideshare. Supplemental Pearson correlations showed a small negative relationship between public transportation frequency and communication apprehension, r = -0.161, p = 0.009, and a stronger negative relationship between rideshare frequency and communication apprehension, r = -0.344, p < .001. Overall, rideshare frequency showed the clearest relationship with communication apprehension.
+An independent-samples t-test found a significant difference in communication apprehension between participants who used ride share, public transportation, or both and participants who used neither mode, t(250) = −5.08, p < .001. Participants who used at least one mode of transportation reported communication apprehension scores that were, on average, 0.82 points lower per question (9.84 points lower across all questions) than participants who used neither mode (mean difference = −0.82, SE = 0.16).
 
 ### RQ 1.5: Do individuals who use different modes of transportation differ in communication apprehension?
 
@@ -217,7 +218,8 @@ tbl = (
 tbl
 ```
 
-As shown in @tbl-transport-groups, ride-share-only users had the lowest average communication apprehension scores (1.17), followed by those who used both modes (1.23), public transportation-only users (1.59), and those who used neither mode (2.11). This pattern suggests that transportation mode is associated with communication apprehension, with ride-share users showing particularly low levels.
+As shown in @tbl-transport-groups, ride-share-only users had the lowest average communication apprehension scores (1.17), followed by those who used both modes (1.23), public transportation-only users (1.59), and those who used neither mode (2.11). This pattern again suggests that transportation mode is associated with communication apprehension, with ride-share users showing particularly low levels.
+
 
 ### Transportation Frequency Effects
 
@@ -232,7 +234,8 @@ model_frequency <- lm(
 summary(model_frequency)
 ```
 
-The analysis revealed that each one-category increase in ride-share frequency was associated with an average 0.23 point decrease in communication apprehension, accounting for public-transport frequency, *b* = −0.23, *SE* = 0.05, *t*(249) = −4.28, *p* < .001. In contrast, each one-category increase in public-transport frequency was associated with an estimated 0.05-point decrease in communication apprehension after accounting for ride-share frequency; however, this association was not statistically significant, *b* = −0.05, *SE* = 0.05, *t*(249) = −1.00, *p* = .318.
+The analysis revealed that each one-category increase in ride-share frequency was associated with an average 0.23 point (per question) decrease in communication apprehension, accounting for public-transport frequency, *b* = −0.23, *SE* = 0.05, *t*(249) = −4.28, *p* < .001. In contrast, each one-category increase in public-transport frequency was associated with an estimated 0.05-point decrease in communication apprehension after accounting for ride-share frequency; however, this association was not statistically significant, *b* = −0.05, *SE* = 0.05, *t*(249) = −1.00, *p* = .318.
+
 
 ```{python}
 #| label: fig-transport-frequency
@@ -288,11 +291,11 @@ plt.show()
 
 Additional analysis using ANOVA confirmed that communication apprehension differed significantly across rideshare frequency groups, *F*(4, 255) = 9.31, *p* < .001, with Tukey post-hoc tests showing that participants who used rideshare 2–4 days per month, 4–8 days per month, or 8 or more days per month had significantly lower communication apprehension than participants who never used rideshare. In contrast, no significant differences were found across public transportation frequency groups, *F*(4, 255) = 1.23, *p* = .30.
 
-**Answer to RQ1:** Yes. Transportation mode and ride-share frequency are associated with communication apprehension. Participants who never used ride-share reported the highest apprehension, and more frequent ride-share use predicted lower apprehension. Public transportation frequency showed no significant association after controlling for ride-share frequency.
+**Answer to RQ1:** Yes. Mean communication apprehension differs between individuals who use ride-share and/or public transport compared to non-users, and an analysis of the frequency of transportation mode found the same significant result. However, these significant effects were more pronounced in individuals using ride-share, likely accounting for the significance of the overall result; Ride-share users differed significantly from non-users, whereas public transportation users showed no significant difference after controlling for ride-share use/frequency.
 
 ## RQ2: Age and Communication Apprehension
 
-We next examined whether age was associated with communication apprehension. Given the mixed findings in the literature regarding age and communication anxiety, we tested this relationship using both correlation and regression analyses.
+We next examined whether age was associated with communication apprehension. We tested this relationship using both correlation and regression analyses.
 
 ```{r echo=FALSE, include=FALSE}
 age_correlation <- cor.test(
@@ -347,15 +350,15 @@ plt.show()
 
 As shown in @fig-age-ca, the scatterplot revealed a slight downward trend, but scores varied widely across ages. A Pearson correlation found a weak negative relationship between age and communication apprehension, *r* = `r sprintf("%.3f", r_value)`, *p* = `r sprintf("%.3f", age_correlation$p.value)`. Linear regression analysis confirmed this weak relationship, *b* = `r sprintf("%.3f", age_estimate)`, *SE* = `r sprintf("%.3f", age_se)`, *t*(`r nrow(data_all) - 2`) = `r sprintf("%.2f", age_t)`, *p* = `r sprintf("%.3f", age_p)`. Age explained only `r sprintf("%.1f", age_r2 * 100)`% of the variation in communication apprehension, indicating that age was not a significant predictor of communication apprehension in this sample.
 
-**Answer to RQ2:** No. Age is not significantly associated with communication apprehension in this sample. The relationship is weak and not statistically reliable.
+**Answer to RQ2:** No. Age alone is not significantly associated with communication apprehension in this sample. The relationship is weak and not statistically reliable.
 
 ## RQ3: Interaction Between Transportation Use and Age
 
-Given that transportation habits—particularly ride-share usage—showed a significant association with communication apprehension while age did not, we tested whether age moderates the relationship between transportation use and communication apprehension. Specifically, we hypothesized that the negative effect of transportation use on communication apprehension would be more pronounced in younger participants than in older participants.
+Given that transportation habits, and particularly ride-share usage, showed a significant association with communication apprehension while age did not, we tested whether age moderates the relationship between transportation use and communication apprehension. Specifically, we hypothesized that the significant negative effect of transportation use on communication apprehension would be more pronounced in younger participants than in older participants.
 
 ### Age Group Moderation Analysis
 
-Participants were categorized into two age groups: young (ages 17-30) and old (ages 31+). We created an overall transportation frequency score by summing ride-share and public transportation monthly frequency values, then tested whether this overall transportation frequency interacted with age group in predicting communication apprehension.
+Participants were categorized into two age groups: young (Generation Z; ages 17-30) and old (ages 31+). We created an overall transportation frequency score by summing ride-share and public transportation monthly frequency values, then tested whether this overall transportation frequency interacted with age group in predicting communication apprehension.
 
 ```{r echo=FALSE, include=FALSE}
 # Create age groups
@@ -442,13 +445,11 @@ plt.show()
 
 As shown in @fig-moderation, the negative relationship between overall transportation frequency and communication apprehension is steeper for young participants compared to old participants. This supports our hypothesis that transportation use has a more pronounced effect on communication apprehension among younger individuals.
 
-When we examined ride-share and public transportation frequencies separately in a model including both modes and their interactions with age group, the specific mode-by-age interactions were not statistically significant. This suggests that the moderation effect is driven by overall transportation use rather than specific transportation modes.
-
 **Answer to RQ3:** Yes. Age moderates the relationship between overall transportation frequency and communication apprehension. The negative association is stronger for younger (17-30) than for older (31+) participants.
 
 ## RQ4: Predictive Modeling of Communication Apprehension
 
-Beyond traditional linear regression approaches, we explored machine learning techniques to predict communication apprehension using transportation habits and age as predictors. These models may capture non-linear relationships and complex interactions that traditional regression might miss. All models used the same predictors: age, public_transport_monthly, public_transport_daily, ride_share_monthly, ride_share_daily, and transport_group.
+Beyond traditional inferential analysis, we explored machine learning techniques to predict communication apprehension using transportation habits and age as predictors. These models may capture non-linear relationships and complex interactions that traditional regression might miss. All models used the same predictors: age, public_transport_monthly, public_transport_daily, ride_share_monthly, ride_share_daily, and transport_group.
 
 ### Baseline Model
 
@@ -527,7 +528,7 @@ plt.show()
 
 ### Random Forest
 
-Random Forest is an ensemble learning method that constructs multiple decision trees and combines their predictions. We used 100 trees with hyperparameters tuned via 5-fold cross-validation on the training set. The tuning grid explored mtry values (2-6) and minimum node size parameters. The same preprocessing as KNN was applied (numeric conversion, dummy variables, median imputation), but scaling was not required for tree-based methods.
+Random Forest is an ensemble learning method that constructs multiple decision trees and combines their predictions. We used 100 trees with hyperparameters tuned via 5-fold cross-validation on the training set. The tuning grid explored mtry values (2-6) and minimum node size parameters. The same preprocessing as KNN was applied (numeric conversion, dummy variables, median imputation), but scaling was not required for this tree-based method.
 
 ```{r echo=FALSE, include=FALSE}
 library(tidymodels)
@@ -953,22 +954,22 @@ plt.tight_layout()
 plt.show()
 ```
 
-@fig-predictions shows the predicted versus actual communication apprehension values for each model. Points closer to the diagonal red line indicate better predictions. The Neural Network plot demonstrates that the best model actually constrained its predictions to a narrower range in order to minimize error.
+@fig-predictions shows the predicted versus actual communication apprehension values for each model. Points closer to the diagonal red line indicate better predictions. 
 
 **Answer to RQ4:** Yes. Machine-learning models improved on the baseline. The neural network achieved the lowest RMSE (0.87), followed by random forest (0.90) and KNN (1.06), indicating that age and transportation habits contain meaningful predictive information.
 
 # Discussion
 
-This study examined the relationships between transportation habits, age, and communication apprehension. Our analyses revealed that transportation habits—particularly ride-share usage—are significantly associated with communication apprehension, with more frequent ride-share users reporting lower communication apprehension. In contrast, public transportation frequency showed no significant association with communication apprehension after accounting for ride-share usage. Age was not a significant predictor of communication apprehension on its own in this sample.
+This study examined the relationships between transportation habits, age, and communication apprehension. Our analyses revealed that transportation habits, particularly ride-share usage, are significantly associated with communication apprehension, with more frequent ride-share users reporting lower communication apprehension. In contrast, public transportation frequency showed no significant association with communication apprehension after accounting for ride-share usage. Age was not a significant predictor of communication apprehension on its own in this sample.
 
-Importantly, we found a significant interaction between overall transportation frequency and age group, supporting our hypothesis that transportation use has a more pronounced effect on communication apprehension among younger participants (ages 17-30) compared to older participants (ages 31+). For young participants, each one-unit increase in overall transportation frequency was associated with a 0.24-point decrease in communication apprehension, whereas the effect was weaker for older participants.
+Importantly, we found a significant interaction between overall transportation frequency and age group, supporting our hypothesis that transportation use has a more pronounced negative effect on communication apprehension among younger participants (Generation Z; ages 17-30) compared to older participants (ages 31+). For young participants, each one-unit increase in overall transportation frequency was associated with a 0.24-point decrease in communication apprehension, whereas the effect was weaker for older participants.
 
-These findings suggest that the mode and frequency of transportation use may be more relevant to communication apprehension than demographic factors like age. The stronger association for ride-share compared to public transportation may reflect differences in the social interaction requirements of these transportation modes. The moderation by age suggests that younger adults may be more sensitive to the social and psychological aspects of transportation experiences.
+These findings suggest that the mode and frequency of transportation use may be more relevant to communication apprehension than demographic factors like age. The stronger association for ride-share compared to public transportation may reflect differences in the social interaction requirements of these transportation modes. The moderation by age suggests that younger adults may be more sensitive to the social and psychological aspects of transportation experiences, or more likely to seek out specific modes of transportation depending on their level of communication apprehension.
 
 Predictive modeling analyses demonstrated that machine learning approaches can predict communication apprehension from transportation habits and age with reasonable accuracy. All models outperformed a simple baseline that predicted the mean, with the Neural Network achieving the best performance (RMSE = 0.87), followed by Random Forest (RMSE = 0.90), and KNN (RMSE = 1.06). This suggests that transportation habits and age contain meaningful predictive information about communication apprehension, and that complex non-linear relationships exist that can be captured by machine learning methods.
 
 ## Suggestions for Next Steps
 
-Several questions remain for future investigation. First, the difference between the ride-share and public transportation relationships has not been directly tested for statistical significance. Second, other factors such as employment status, education, and geographic location may moderate these relationships and warrant further investigation. Third, the neural network model, while achieving the best performance, is less interpretable than simpler models; future work could explore model interpretability techniques to understand which specific patterns the neural network captured. Finally, the sample size for this study was relatively modest; replication with larger samples would strengthen confidence in these findings.
+Several questions remain for future investigation. First, other factors such as employment status, education, and geographic location may moderate these relationships and warrant further investigation. Second, the neural network model, while achieving the best performance, is less interpretable than simpler models; future work could explore model interpretability techniques to understand which specific patterns the neural network captured. Finally, the sample size for this study was relatively modest; replication with larger samples would strengthen confidence in these findings.
 
 # References
